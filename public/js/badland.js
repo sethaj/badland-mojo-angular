@@ -40,7 +40,7 @@
             bf.updateScore($scope.songs[index]).then(function(data) {
 
                 $scope.songs[index].score = data.score;
-console.log($scope.songs[index]);
+
             });   
         };
 
@@ -58,6 +58,7 @@ console.log($scope.songs[index]);
 
     }
 })();
+
 
 (function() {
     'use strict';
@@ -102,7 +103,6 @@ console.log($scope.songs[index]);
             return deferred.promise;
         }
     }
-
 })();
 
 
@@ -111,13 +111,12 @@ console.log($scope.songs[index]);
     angular.module('Badland')
     .directive('changeColor', ChangeColor);
     
-    ChangeColor.$inject = ['$document'];
-    
-    function ChangeColor($document) {
+    function ChangeColor() {
 
         return {
             restrict: 'A',
             link: function(scope, element, attr, ctrl) {
+
                 element.css({
                     'background-color': rand_hex_color(),
                     'color':            rand_hex_color()
@@ -125,9 +124,10 @@ console.log($scope.songs[index]);
                 $(element).children('.score').css({
                     'background-color': rand_hex_color(),
                 });
+
                 element.on("mouseover", function() {
                     element.everyTime(100, function() {
-                        // everyyTime is from jquery.timers.js
+                        // everyTime is from jquery.timers.js
                         element.css({
                             'background-color': rand_hex_color(),
                             'color':            rand_hex_color()
@@ -142,7 +142,6 @@ console.log($scope.songs[index]);
                 });
             }
         };
-
     }
 })();
 

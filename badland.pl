@@ -13,7 +13,6 @@ plugin 'AssetPack';
 
 my @js_files = (
     "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.js",
     "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js",
     "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.js",
     "js/jquery.timers.js",
