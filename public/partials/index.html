@@ -1,0 +1,17 @@
+
+<div id="content">
+
+    <div class="ascii" ng-repeat="song in songs" change-color>
+        <pre>{{ song.ascii }}</pre>
+        <div class="song">
+            <p><a href="{{ interpolateMp3(song.file) }}">{{ song.song }}</a></p>
+            <audio controls="controls" preload="metadata">
+                <source src="{{ interpolateMp3(song.file) }}">
+            </audio>
+        </div>
+        <div class="score">
+            <p id="{{ song.id }}" ng-click="updateScore($index)">+{{ song.score }}</p>
+        </div>
+    </div>
+
+</div>

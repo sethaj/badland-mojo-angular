@@ -1,0 +1,49 @@
+
+a, a:hover  {
+    text-decoration: none;
+}
+
+#container {
+    margin: 0 auto;
+    width: 50em;
+}
+
+.ascii {
+    float: left;
+    margin: 10px;
+    padding: 5px;
+    position:relative;
+    border-radius: 15px;
+}
+
+.score {
+    position: absolute;
+    top:0;
+    right:0;
+    height:30px;
+    width:60px;
+    margin:5px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    border-radius: 15px;
+    opacity:0.8;
+    z-index:11;
+    cursor: pointer;
+}
+
+.score p {
+    font-family: Arial, Helvetica, sans-serif;
+    position:relative;
+    bottom:10px;
+    text-align: center;
+}
+
+.song {
+    font-family: Arial, Helvetica, sans-serif;
+    z-index: 10;
+    text-align: center;
+}
+
+.song p {
+    padding-top: 5px;
+}
