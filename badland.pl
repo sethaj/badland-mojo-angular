@@ -76,8 +76,10 @@ get '/update/:song_id' => sub {
 
     $sth = $dbh->prepare("select score from song where id = ?");
     $sth->execute($song_id);
-
     my $score = $sth->fetchrow;
+
+    $self->app->log->info($self->tx->remote_address . " updated  " . $song_id);
+
     $self->render(json => { score => $score }, status => 200);
 
 };
