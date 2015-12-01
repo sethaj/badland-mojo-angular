@@ -93,7 +93,7 @@
         function updateScore(song) {
             var deferred = $q.defer();
 
-            $http.get('/update/' + song.id)
+            $http.post('/update/' + song.id)
             .success(function(data) {
                 deferred.resolve(data);
             })

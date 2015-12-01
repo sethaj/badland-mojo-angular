@@ -33,6 +33,7 @@ app->asset(
 
 get '/' => sub {
     my $self = shift;
+    $self->cookie('XSRF-TOKEN' => $self->csrf_token, { path => '/' });
     $self->render('index');
 };
 
@@ -67,9 +68,16 @@ get '/badland' => sub {
 };
 
 
-get '/update/:song_id' => sub {
-    my $self = shift;
+post '/update/:song_id' => sub {
+
+    my $self    = shift;
     my $song_id = $self->stash('song_id');
+    my $csrf    = $self->req->headers->header('X-XSRF-TOKEN') || '';
+
+    if ($csrf ne $self->csrf_token) {
+        $self->app->log->warn($self->tx->remote_address . "failed to update " . $song_id ." : BAD TOKEN");
+        $self->rendered(403);
+    }
 
     my $sth = $dbh->prepare("update song set score = score + 1 where id = ?");
     $sth->execute($song_id);
