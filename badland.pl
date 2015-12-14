@@ -15,6 +15,7 @@ my @js_files = (
     "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js",
     "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js",
     "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/masonry/3.3.2/masonry.pkgd.min.js",
     "js/jquery.timers.js",
     "js/badland.js",
 );

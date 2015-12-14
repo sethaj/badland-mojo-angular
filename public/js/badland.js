@@ -30,9 +30,10 @@
     
                 $scope.songs = data.badlands;
 
-                $('body').css('background-color', rand_hex_color());
-                $('body').css('opacity', '0.4');
-            
+                $('#content').masonry({
+                    itemSelector : '.ascii',
+                    columnWidth : 200 
+                });
             });
         };
 
@@ -55,6 +56,9 @@
 
 
         $scope.getSongs();
+
+        $('body').css('background-color', rand_hex_color());
+        $('body').css('opacity', '0.4');
 
     }
 })();
