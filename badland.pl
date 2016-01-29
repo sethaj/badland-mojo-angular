@@ -113,7 +113,7 @@ __DATA__
 
         <%= asset 'app.js' %>
     </body>
-</body>
+</html>
 
 
 @@ index.html.ep
