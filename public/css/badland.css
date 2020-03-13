@@ -47,3 +47,7 @@ a, a:hover  {
 .song p {
     padding-top: 5px;
 }
+
+.song p a {
+    color: white;
+}
