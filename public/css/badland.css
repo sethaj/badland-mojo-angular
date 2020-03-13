@@ -13,7 +13,7 @@ a, a:hover  {
     margin: 10px;
     padding: 5px;
     position:relative;
-    border-radius: 15px;
+    /* border-radius: 15px; */
 }
 
 .score {
@@ -23,9 +23,9 @@ a, a:hover  {
     height:30px;
     width:60px;
     margin:5px;
-    -moz-border-radius: 15px;
+    /* -moz-border-radius: 15px;
     -webkit-border-radius: 15px;
-    border-radius: 15px;
+    border-radius: 15px; */
     opacity:0.8;
     z-index:11;
     cursor: pointer;
