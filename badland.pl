@@ -104,6 +104,7 @@ __DATA__
     <head>
         <title><%= title %></title>
         <%= asset 'style.css' %>
+        <meta name="google-site-verification" content="nw0_4eHiUsEx8f3jkp00XTMuUuz5huvZZtU3rRynOBA" />
     </head>
     <body ng-app="Badland">
 
@@ -112,6 +113,14 @@ __DATA__
         </div>
 
         <%= asset 'app.js' %>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-12175263-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-12175263-1');
+        </script>
     </body>
 </html>
 
