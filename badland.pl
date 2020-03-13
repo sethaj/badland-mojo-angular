@@ -42,7 +42,7 @@ get '/' => sub {
 get '/badland' => sub {
     my $self = shift;
     
-    my $songs   = $dbh->selectall_arrayref("select * from song order by score desc");
+    my $songs   = $dbh->selectall_arrayref("select * from song order by score desc") or die $dbh->errstr;
     my $asciis  = $dbh->selectall_arrayref("select * from ascii");
     my $count   = scalar @$asciis;
     my $badlands = [];

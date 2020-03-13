@@ -30,7 +30,7 @@
     
                 $scope.songs = data.badlands;
 
-                $('#content').masonry({
+                $('.content').masonry({
                     itemSelector : '.ascii',
                     columnWidth : 200 
                 });
