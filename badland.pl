@@ -104,6 +104,7 @@ __DATA__
     <head>
         <title><%= title %></title>
         <%= asset 'style.css' %>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="nw0_4eHiUsEx8f3jkp00XTMuUuz5huvZZtU3rRynOBA" />
     </head>
     <body ng-app="Badland">
