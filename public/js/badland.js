@@ -158,7 +158,7 @@ function rand(i) {
 function rand_hex_color() {
     // http://paulirish.com/2009/random-hex-color-code-snippets/
     // return '#'+ ('000000' + rand(16777215).toString(16)).slice(-6);
-    // var colors = ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999"];
-    var colors = ["#414a4c", "#3b444b", "#353839", "#232b2b","#0e1111", "white"];
+    var colors = ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999"];
+    // var colors = ["#414a4c", "#3b444b", "#353839", "#232b2b","#0e1111", "white"];
     return colors[Math.floor(Math.random() * colors.length)]
 }   

@@ -2,7 +2,13 @@
 use Mojolicious::Lite;
 use DBI;
 
-state $dbh = DBI->connect("dbi:SQLite:dbname=badland.sqlite.2015-10-22.db","","");
+my $dbname = "/home/serth/badland-mojo/badland.sqlite.2015-10-22.db";
+our $dbh = DBI->connect("dbi:SQLite:dbname=$dbname","","", {
+    PrintError       => 0,
+    RaiseError       => 1,
+    AutoCommit       => 1,
+    FetchHashKeyName => 'NAME_lc', 
+});
 
 my $static = app->static();
 push @{ $static->paths }, "/home/serth/badland.org/public/";
@@ -41,7 +47,7 @@ get '/' => sub {
 
 get '/badland' => sub {
     my $self = shift;
-    
+
     my $songs   = $dbh->selectall_arrayref("select * from song order by score desc") or die $dbh->errstr;
     my $asciis  = $dbh->selectall_arrayref("select * from ascii");
     my $count   = scalar @$asciis;
