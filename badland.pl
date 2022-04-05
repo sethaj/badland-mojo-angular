@@ -112,6 +112,14 @@ __DATA__
         <%= asset 'style.css' %>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="nw0_4eHiUsEx8f3jkp00XTMuUuz5huvZZtU3rRynOBA" />
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-T9X9XDSDGR"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-T9X9XDSDGR');
+        </script>
     </head>
     <body ng-app="Badland">
 
