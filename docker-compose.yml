@@ -1,0 +1,14 @@
+---
+services:
+  app:
+    container_name: badland
+    build:
+      dockerfile: Dockerfile
+      context: .
+    working_dir: /app
+    command: ["perl", "badland.pl", "daemon", "-l", "http://0.0.0.0:8025"]
+    ports:
+      - "8025:8025"
+    volumes:
+      - .:/app
+      - ./public/mp3:/app/public/mp3

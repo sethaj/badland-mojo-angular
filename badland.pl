@@ -3,6 +3,8 @@ use Mojolicious::Lite;
 use DBI;
 
 my $dbname = "/home/serth/badland-mojo/badland.sqlite.2015-10-22.db";
+$dbname = "database/badland.sqlite.2015-10-22.db" unless -f $dbname; # docker location
+
 our $dbh = DBI->connect("dbi:SQLite:dbname=$dbname","","", {
     PrintError       => 0,
     RaiseError       => 1,

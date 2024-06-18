@@ -57,8 +57,8 @@
 
         $scope.getSongs();
 
-        $('body').css('background-color', rand_hex_color());
-        $('body').css('opacity', '0.4');
+        $('body').css('background-color', '#000000'); //rand_hex_color());
+        $('body').css('opacity', '0.9');
 
     }
 })();
@@ -123,7 +123,7 @@
 
                 element.css({
                     'background-color': rand_hex_color(),
-                    'color':            rand_hex_color()
+                    'color':            '#ffffff' // rand_hex_color()
                 });
                 $(element).children('.score').css({
                     'background-color': rand_hex_color(),
@@ -134,10 +134,11 @@
                         // everyTime is from jquery.timers.js
                         element.css({
                             'background-color': rand_hex_color(),
-                            'color':            rand_hex_color()
+                            'color':            '#ffffff', // rand_hex_color()
                         });
                         $(element).children('.score').css({
-                            'background-color': rand_hex_color()
+                            'background-color': rand_hex_color(),
+                            'color':            '#ffffff'
                         });
                     });
                 });
@@ -158,7 +159,12 @@ function rand(i) {
 function rand_hex_color() {
     // http://paulirish.com/2009/random-hex-color-code-snippets/
     // return '#'+ ('000000' + rand(16777215).toString(16)).slice(-6);
+    // blacks and greys
     var colors = ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999"];
     // var colors = ["#414a4c", "#3b444b", "#353839", "#232b2b","#0e1111", "white"];
+    // blacks mostly
+    // var colors = ['#000000', '#262626', '#333333', '#404040', '#4d4d4d', '#595959']
+    // very dark different hues
+    // var colors = ['#330000', '#330d00', '#331a00', '#332600', '#333300', '#263300', '#1a3300', '#0d3300', '#003300', '#00330d', '#00331a', '#00330d', '#00331a', '#003326', '#003333', '#002633', '#001a33', '#000d33', '#000033', '#0d0033', '#1a0033', '#260033', '#330033', '#330026', '#33001a', '#33000d', '#330000'];
     return colors[Math.floor(Math.random() * colors.length)]
 }   
