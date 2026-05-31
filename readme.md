@@ -201,13 +201,29 @@ docker compose build && docker compose up -d --force-recreate app
 
 
 ```text
-  _===_
-  (o,o)
- /( : )\
-  /   \
- /     \
+           \                  /
+    _________))                ((__________
+   /.-------./\\    \    /    //\.--------.\
+  //#######//##\\   ))  ((   //##\\########\\
+ //#######//###((  ((    ))  ))###\\########\\
+((#######((#####\\  \\  //  //#####))########))
+ \##' `###\######\\  \)(/  //######/####' `##/
+  )'    ``#)'  `##\`->oo<-'/##'  `(#''     `(
+          (       ``\`..'/''       )
+                     \""(
+                      `- )
+                      / /
+                     ( /\
+                     /\| \
+                    (  \
+                        )
+                       /
+                      (
+                      `
+Art Credit: Mark Brooke-Sumner
 ```
 
+```text
 > One day I'd like to visit
 > all the places I went crazy
 > would you please come along with me?
@@ -225,3 +241,4 @@ docker compose build && docker compose up -d --force-recreate app
 > saved for times
 > when I'm leaving the world behind
 
+```
