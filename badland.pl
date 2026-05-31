@@ -23,9 +23,9 @@ plugin 'AssetPack';
 push @{app->asset->store->paths}, @{app->static->paths};
 app->asset->process(
     'app.js' =>
-        "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular-route.min.js",
         "js/howler.min.js",
         "js/badland.js",
 );
