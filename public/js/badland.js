@@ -20,9 +20,9 @@
     angular.module('Badland')
     .controller('BadlandController', Badland);
 
-    Badland.$inject = ['$scope', 'BadlandFactory', '$sce', 'PlayerService', '$interval', '$timeout'];
+    Badland.$inject = ['$scope', 'BadlandFactory', 'PlayerService', '$interval', '$timeout'];
 
-    function Badland($scope, bf, $sce, PlayerService, $interval, $timeout) {
+    function Badland($scope, bf, PlayerService, $interval, $timeout) {
 
         $scope.player      = PlayerService;
         $scope.dancer      = {
@@ -251,7 +251,11 @@
 
         $scope.getSongs = function() {
             bf.getSongs().then(function(data) {
-                $scope.songs = data.badlands;
+                $scope.songs = (data.badlands || []).map(function(song) {
+                    song.mp3Url = song.file ? '/mp3/' + song.file : null;
+                    song.oggUrl = song.ogg ? '/mp3/' + song.ogg : null;
+                    return song;
+                });
                 $scope.dancerPhrases = (data.dancer_phrases && data.dancer_phrases.length)
                     ? data.dancer_phrases
                     : ['fresh'];
@@ -263,15 +267,6 @@
             bf.updateScore($scope.songs[index]).then(function(data) {
                 $scope.songs[index].score = data.score;
             });
-        };
-
-        // Avoiding https://docs.angularjs.org/error/$interpolate/noconcat?p0=
-        $scope.interpolateMp3 = function(mp3) {
-            return $sce.trustAsResourceUrl('/mp3/' + mp3);
-        };
-
-        $scope.interpolateOgg = function(ogg) {
-            return $sce.trustAsResourceUrl('/mp3/' + ogg);
         };
 
         $scope.getSongs();

@@ -32,14 +32,14 @@
 
 <div class="content">
 
-    <div class="ascii" ng-repeat="song in songs" ng-if="song.file"
-         ng-class="{'playing': player.currentIndex === $index}">
+        <div class="ascii" ng-repeat="song in songs" ng-if="song.file"
+            ng-class="player.currentIndex === $index ? 'playing' : ''">
         <pre>{{ song.ascii }}</pre>
         <div class="song">
             <p>{{ song.song }}</p>
             <audio controls preload="metadata">
-                <source ng-attr-src="{{ interpolateMp3(song.file) }}" type="audio/mpeg">
-                <source ng-attr-src="{{ interpolateOgg(song.ogg) }}" type="audio/ogg">
+                <source ng-attr-src="{{ song.mp3Url }}" type="audio/mpeg">
+                <source ng-if="song.oggUrl" ng-attr-src="{{ song.oggUrl }}" type="audio/ogg">
             </audio>
         </div>
         <div class="score">
