@@ -220,7 +220,7 @@ docker compose build && docker compose up -d --force-recreate app
                        /
                       (
                       `
-Art Credit: Mark Brooke-Sumner
+Mark Brooke-Sumner
 ```
 
 ```text
