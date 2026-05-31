@@ -12,3 +12,13 @@ services:
     volumes:
       - .:/app
       - ./public/mp3:/app/public/mp3
+
+  test:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    working_dir: /app
+    command: ["prove", "-lv", "t/"]
+    volumes:
+      - .:/app
+

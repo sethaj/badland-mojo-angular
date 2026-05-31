@@ -1,42 +1,117 @@
-
-a, a:hover  {
+a, a:hover {
     text-decoration: none;
 }
 
-#container {
-    margin: 0 auto;
-    width: 50em;
+body {
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    padding-top: 56px;
+}
+
+/* CRT scanline overlay */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9998;
+}
+
+/* ── Grid layout ─────────────────────────────────────────────────────────── */
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+    align-items: flex-start;
 }
 
 .ascii {
-    float: left;
-    margin: 10px;
-    padding: 5px;
-    position:relative;
-    /* border-radius: 15px; */
+    position: relative;
+    padding: 10px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    will-change: transform;
+    animation: drift 8s ease-in-out infinite;
 }
+
+/* Stagger drift so tiles don't all move in sync */
+.ascii:nth-child(6n+1) { animation-delay:  0.0s; }
+.ascii:nth-child(6n+2) { animation-delay: -1.3s; }
+.ascii:nth-child(6n+3) { animation-delay: -2.7s; }
+.ascii:nth-child(6n+4) { animation-delay: -4.0s; }
+.ascii:nth-child(6n+5) { animation-delay: -5.3s; }
+.ascii:nth-child(6n+6) { animation-delay: -6.7s; }
+
+.ascii pre {
+    font-family: monospace;
+    font-size: 0.75rem;
+    white-space: pre;
+    margin: 0;
+    color: #fff;
+    text-shadow: 0 0 4px rgba(255,255,255,0.5), 0 0 10px rgba(255,255,255,0.2);
+}
+
+/* ── Stronger effect for currently-playing tile ── */
+.ascii.playing {
+    animation: drift 8s ease-in-out infinite, hue-spin 2s linear infinite;
+    animation-delay: 0s, 0s;
+    box-shadow:
+        0 0 32px 8px #fff,
+        0 0 64px 16px #fff,
+        0 0 128px 32px #fff,
+        0 0 0 6px #fff inset;
+    border: 3px solid #fff;
+    z-index: 20;
+    filter: invert(1) hue-rotate(180deg) brightness(1.2) !important;
+}
+
+.ascii.playing pre {
+    text-shadow:
+        0 0 12px  #fff,
+        0 0 32px  #fff,
+        0 0 64px  #fff,
+        0 0 128px #fff;
+    filter: brightness(1.7) contrast(1.2);
+}
+
+/* ── Score badge ─────────────────────────────────────────────────────────── */
 
 .score {
     position: absolute;
-    top:0;
-    right:0;
-    height:30px;
-    width:60px;
-    margin:5px;
-    /* -moz-border-radius: 15px;
-    -webkit-border-radius: 15px;
-    border-radius: 15px; */
-    opacity:0.8;
-    z-index:11;
+    top: 0;
+    right: 0;
+    height: 30px;
+    width: 60px;
+    margin: 5px;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0.8;
+    z-index: 11;
     cursor: pointer;
 }
 
 .score p {
     font-family: Arial, Helvetica, sans-serif;
-    position:relative;
-    bottom:10px;
+    position: relative;
+    bottom: 10px;
     text-align: center;
+    color: #fff;
 }
+
+/* ── Song title ──────────────────────────────────────────────────────────── */
 
 .song {
     font-family: Arial, Helvetica, sans-serif;
@@ -46,8 +121,366 @@ a, a:hover  {
 
 .song p {
     padding-top: 5px;
+    color: #fff;
 }
 
-.song p a {
-    color: white;
+.song audio {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    opacity: 0.35;
+    filter: grayscale(1) brightness(0.7);
+    transition: opacity 0.2s, filter 0.2s;
+}
+
+.ascii.playing .song audio {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+/* ── Global player bar ───────────────────────────────────────────────────── */
+
+.player-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background-color: #111;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 100;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.player-info {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+}
+
+.player-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.player-controls button {
+    background: none;
+    border: 1px solid #555;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px 12px;
+    font-size: 1rem;
+    border-radius: 3px;
+}
+
+.player-controls button:hover {
+    background-color: #333;
+}
+
+.player-controls button[disabled] {
+    opacity: 0.3;
+    cursor: default;
+}
+.player-controls button[disabled]:hover {
+    background-color: transparent;
+}
+
+/* ── Tiny Dancer (visible only while Howler playlist is playing) ─────────── */
+
+.dancer-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 140;
+}
+
+.dancer {
+    position: absolute;
+    top: 12px;
+    width: 14px;
+    height: 20px;
+    transform-origin: top left;
+    will-change: transform, left, top;
+    transition: transform 2s linear;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.dancer-sprite {
+    position: relative;
+    width: 14px;
+    height: 20px;
+    transform-origin: 50% 55%;
+}
+
+.stick-head,
+.stick-body,
+.stick-arm,
+.stick-leg {
+    position: absolute;
+    background: #fff;
+}
+
+.top-hat {
+    position: absolute;
+    top: -4px;
+    left: 3px;
+    width: 8px;
+    height: 4px;
+    background: #000;
+    border: 1px solid #fff;
+    box-sizing: border-box;
+}
+
+.top-hat::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    bottom: -2px;
+    width: 12px;
+    height: 2px;
+    background: #000;
+    border: 1px solid #fff;
+    box-sizing: border-box;
+}
+
+.stick-head {
+    width: 4px;
+    height: 4px;
+    top: 0;
+    left: 5px;
+    border-radius: 50%;
+}
+
+.dancer-eye {
+    position: absolute;
+    width: 3.6px;
+    height: 3.6px;
+    left: 0.2px;
+    top: 0.2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 0.5px #888;
+}
+
+.stick-body {
+    width: 2px;
+    height: 6px;
+    top: 4px;
+    left: 6px;
+}
+
+.stick-arm {
+    width: 5px;
+    height: 1px;
+    top: 6px;
+}
+
+.stick-arm-left {
+    left: 1px;
+    transform: rotate(25deg);
+    transform-origin: right center;
+}
+
+.stick-arm-right {
+    left: 7px;
+    transform: rotate(-25deg);
+    transform-origin: left center;
+}
+
+.stick-leg {
+    width: 1px;
+    height: 7px;
+    top: 10px;
+}
+
+.stick-leg-left {
+    left: 5px;
+    transform: rotate(18deg);
+    transform-origin: top center;
+}
+
+.stick-leg-right {
+    left: 8px;
+    transform: rotate(-18deg);
+    transform-origin: top center;
+}
+
+.fresh-bubble {
+    position: absolute;
+    top: -10px;
+    left: 9px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7px;
+    line-height: 1;
+    color: #000;
+    background: #fff;
+    border-radius: 7px;
+    padding: 2px 4px;
+    box-shadow: 0 0 0 1px #000;
+    white-space: nowrap;
+}
+
+.fresh-bubble::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    bottom: -3px;
+    width: 0;
+    height: 0;
+    border-left: 3px solid #fff;
+    border-top: 3px solid transparent;
+}
+
+.pose-worm {
+    animation: dancer-worm 0.48s ease-in-out infinite;
+}
+
+.pose-moonwalk {
+    animation: dancer-moonwalk 0.55s linear infinite;
+}
+
+.pose-spin-head .stick-head {
+    animation: dancer-spin 0.18s linear infinite;
+}
+
+.pose-spin-back {
+    animation: dancer-spin 0.26s linear infinite;
+}
+
+.pose-wave .stick-arm-right {
+    animation: dancer-wave 0.12s ease-in-out infinite alternate;
+}
+
+.pose-flare .stick-leg-left {
+    animation: dancer-kick-left 0.12s ease-in-out infinite alternate;
+}
+
+.pose-flare .stick-leg-right {
+    animation: dancer-kick-right 0.12s ease-in-out infinite alternate;
+}
+
+.pose-freeze {
+    transform: scale(1.28) rotate(-16deg);
+}
+
+.pose-bow {
+    transform: translateY(2px) rotate(18deg);
+}
+
+.pose-bow .stick-head {
+    transform: translateY(2px);
+}
+
+.pose-moonwalk-exit-left {
+    animation: dancer-moonwalk-exit 0.28s linear infinite;
+}
+
+.pose-moonwalk-exit-right {
+    animation: dancer-moonwalk-exit 0.28s linear infinite;
+    transform: scaleX(-1);
+}
+
+.pose-moonwalk-exit-left .stick-head,
+.pose-moonwalk-exit-right .stick-head {
+    transform: translateY(2px);
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+
+@keyframes drift {
+    0%, 100% { transform: translate( 0px,  0px); }
+    25%       { transform: translate( 1px, -2px); }
+    50%       { transform: translate(-1px,  1px); }
+    75%       { transform: translate( 2px,  1px); }
+}
+
+@keyframes hue-spin {
+    from { filter: hue-rotate(  0deg) brightness(1.3); }
+    to   { filter: hue-rotate(360deg) brightness(1.3); }
+}
+
+@keyframes dancer-worm {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(2px) rotate(8deg); }
+    50% { transform: translateY(0px) rotate(-12deg); }
+    75% { transform: translateY(1px) rotate(6deg); }
+}
+
+@keyframes dancer-moonwalk {
+    0%, 100% { transform: translateX(0px) rotate(0deg); }
+    50% { transform: translateX(-3px) rotate(-4deg); }
+}
+
+@keyframes dancer-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes dancer-wave {
+    from { transform: rotate(-30deg); }
+    to { transform: rotate(-120deg); }
+}
+
+@keyframes dancer-kick-left {
+    from { transform: rotate(25deg); }
+    to { transform: rotate(-65deg); }
+}
+
+@keyframes dancer-kick-right {
+    from { transform: rotate(-25deg); }
+    to { transform: rotate(65deg); }
+}
+
+@keyframes dancer-moonwalk-exit {
+    0%, 100% { transform: translateY(0px) rotate(-6deg); }
+    50% { transform: translateY(1px) rotate(6deg); }
+}
+
+/* ── Responsive: scale ASCII font and tile padding on small screens ── */
+@media (max-width: 600px) {
+    .content {
+        gap: 6px;
+        padding: 4px;
+    }
+    .ascii {
+        padding: 4px;
+        min-width: 0;
+        max-width: 100vw;
+    }
+    .ascii pre {
+        font-size: clamp(0.45rem, 2vw, 0.75rem);
+        word-break: break-all;
+        overflow-x: auto;
+        max-width: 90vw;
+    }
+    .song p {
+        font-size: 0.9rem;
+    }
+    .player-bar {
+        height: 40px;
+        font-size: 0.9rem;
+        padding: 0 4px;
+    }
+}
+
+@media (max-width: 400px) {
+    .ascii pre {
+        font-size: clamp(0.35rem, 3vw, 0.6rem);
+    }
+    .player-bar {
+        height: 32px;
+        font-size: 0.8rem;
+    }
 }
