@@ -72,7 +72,7 @@ jobs:
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='public/mp3' \
-            --exclude='database'
+            --exclude='database/' \
             ./ ${USER}@${HOST}:/home/seth/apps/badland/
           ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=no ${USER}@${HOST} \
             "cd /home/seth/apps/badland && \
