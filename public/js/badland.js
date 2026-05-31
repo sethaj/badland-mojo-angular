@@ -37,6 +37,11 @@
             exiting: false,
         };
         $scope.dancerPhrases = ['fresh'];
+        $scope.dancerStyle = {
+            left: '20px',
+            top: '80px',
+            transform: 'scale(1)'
+        };
 
         var danceInterval = null;
         var sizeInterval = null;
@@ -73,6 +78,12 @@
             return 100 + Math.floor(Math.random() * 401);     // 100..500 (10%)
         }
 
+        function syncDancerStyle() {
+            $scope.dancerStyle.left = $scope.dancer.x + 'px';
+            $scope.dancerStyle.top = $scope.dancer.y + 'px';
+            $scope.dancerStyle.transform = 'scale(' + ($scope.dancer.size / 20) + ')';
+        }
+
         function startDancer() {
             if (danceInterval) return;
             var view = viewport();
@@ -85,6 +96,7 @@
             $scope.dancer.hat = false;
             $scope.dancer.hidden = false;
             $scope.dancer.exiting = false;
+            syncDancerStyle();
             freshTicks = 0;
             vx = (Math.random() < 0.5 ? -1 : 1) * (3 + Math.floor(Math.random() * 6));
             vy = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.floor(Math.random() * 5));
@@ -122,6 +134,8 @@
                     vy = -Math.abs(vy);
                 }
 
+                syncDancerStyle();
+
                 if (Math.random() < 0.35) {
                     $scope.dancer.pose = randomPose();
                 }
@@ -138,6 +152,7 @@
 
             sizeInterval = $interval(function() {
                 $scope.dancer.size = randomSize();
+                syncDancerStyle();
             }, 2000);
         }
 
@@ -177,6 +192,7 @@
 
                 exitInterval = $interval(function() {
                     $scope.dancer.x += goRight ? 10 : -10;
+                    syncDancerStyle();
 
                     if ($scope.dancer.x > view.w + 40 || $scope.dancer.x < -($scope.dancer.size + 40)) {
                         if (exitInterval) {
@@ -212,6 +228,7 @@
             $scope.dancer.hat = false;
             $scope.dancer.hidden = false;
             $scope.dancer.exiting = false;
+            syncDancerStyle();
         }
 
 
@@ -224,6 +241,7 @@
             }
         });
 
+                    syncDancerStyle();
         $scope.$on('$destroy', function() {
             if (danceInterval) { $interval.cancel(danceInterval); }
             if (sizeInterval) { $interval.cancel(sizeInterval); }
