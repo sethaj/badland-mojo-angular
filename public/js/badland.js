@@ -266,9 +266,9 @@
     angular.module('Badland')
     .factory('BadlandFactory', Badland);
 
-    Badland.$inject = ['$http', '$q'];
+    Badland.$inject = ['$http'];
 
-    function Badland($http, $q) {
+    function Badland($http) {
 
         var service = {
             getSongs: getSongs,
@@ -278,27 +278,15 @@
         return service;
 
         function getSongs() {
-            var deferred = $q.defer();
-            $http.get('/badland')
-            .success(function(data) {
-                deferred.resolve(data);
-            })
-            .error(function(reason) {
-                deferred.reject(reason);
+            return $http.get('/badland').then(function(response) {
+                return response.data;
             });
-            return deferred.promise;
         }
 
         function updateScore(song) {
-            var deferred = $q.defer();
-            $http.post('/update/' + song.id)
-            .success(function(data) {
-                deferred.resolve(data);
-            })
-            .error(function(reason) {
-                deferred.reject(reason);
+            return $http.post('/update/' + song.id).then(function(response) {
+                return response.data;
             });
-            return deferred.promise;
         }
     }
 })();
