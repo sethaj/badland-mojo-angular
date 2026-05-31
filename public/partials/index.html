@@ -14,11 +14,7 @@
 </div>
 
 <div class="dancer-layer" ng-if="player.isPlaying && !dancer.hidden">
-    <div class="dancer" ng-style="{
-            left: dancer.x + 'px',
-            top: dancer.y + 'px',
-            transform: 'scale(' + (dancer.size / 20) + ')'
-    }" ng-click="onDancerClick($event)">
+    <div class="dancer" ng-style="dancerStyle" ng-click="onDancerClick($event)">
         <div class="dancer-sprite" ng-class="'pose-' + dancer.pose">
             <div class="fresh-bubble" ng-if="dancer.fresh">{{ dancer.phrase }}</div>
             <div class="top-hat" ng-if="dancer.hat"></div>
