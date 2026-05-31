@@ -75,7 +75,7 @@ jobs:
             ./ ${USER}@${HOST}:/home/seth/apps/badland/
           ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=no ${USER}@${HOST} \
             "cd /home/seth/apps/badland && \
-             rm -f public/packed/_assetpack.map public/packed/style-*.min.css public/packed/app-*.min.js && \
+             find public/packed -maxdepth 1 -type f \( -name '_assetpack.map' -o -name 'style-*.min.css' -o -name 'app-*.min.js' \) -delete && \
              docker compose build && \
              docker compose up -d --force-recreate app"
           rm /tmp/deploy_key
