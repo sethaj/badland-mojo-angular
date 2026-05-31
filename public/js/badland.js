@@ -2,18 +2,17 @@
     'use strict';
     angular.module('Badland', [
         'ngRoute',
-    ])  
+    ])
     .config(function($routeProvider) {
         $routeProvider.when('/', {
             templateUrl: 'partials/index.html',
             controller:  'BadlandController'
-        })  
+        })
         .otherwise({
-            redirectTo: '/' 
-        }); 
-    }); 
+            redirectTo: '/'
+        });
+    });
 })();
-
 
 
 (function() {
@@ -21,45 +20,243 @@
     angular.module('Badland')
     .controller('BadlandController', Badland);
 
-    Badland.$inject = ['$scope', 'BadlandFactory', '$sce'];
+    Badland.$inject = ['$scope', 'BadlandFactory', '$sce', 'PlayerService', '$interval', '$timeout'];
 
-    function Badland($scope, bf, $sce) {
+    function Badland($scope, bf, $sce, PlayerService, $interval, $timeout) {
+
+        $scope.player      = PlayerService;
+        $scope.dancer      = {
+            x: 20,
+            y: 80,
+            size: 20,
+            pose: 'worm',
+            fresh: false,
+            phrase: 'fresh',
+            hat: false,
+            hidden: false,
+            exiting: false,
+        };
+        $scope.dancerPhrases = ['fresh'];
+
+        var danceInterval = null;
+        var sizeInterval = null;
+        var exitInterval = null;
+        var exitTimeout = null;
+        var freshTicks = 0;
+        var vx = 5;
+        var vy = 3;
+        var poses = ['worm', 'moonwalk', 'spin-head', 'spin-back', 'wave', 'flare', 'freeze'];
+
+        function randomPose() {
+            return poses[Math.floor(Math.random() * poses.length)];
+        }
+
+        function randomPhrase() {
+            var list = ($scope.dancerPhrases && $scope.dancerPhrases.length)
+                ? $scope.dancerPhrases
+                : ['fresh'];
+            return list[Math.floor(Math.random() * list.length)];
+        }
+
+        function viewport() {
+            return {
+                w: window.innerWidth || 360,
+                h: window.innerHeight || 640
+            };
+        }
+
+        function randomSize() {
+            // Keep the dancer small most of the time, with occasional giant moments.
+            if (Math.random() < 0.9) {
+                return 20 + Math.floor(Math.random() * 80);   // 20..99 (90%)
+            }
+            return 100 + Math.floor(Math.random() * 401);     // 100..500 (10%)
+        }
+
+        function startDancer() {
+            if (danceInterval) return;
+            var view = viewport();
+            $scope.dancer.size = 20;
+            $scope.dancer.x = Math.max(0, Math.floor(Math.random() * (view.w - 30)));
+            $scope.dancer.y = Math.max(56, Math.floor(Math.random() * (view.h - 80)));
+            $scope.dancer.pose = 'worm';
+            $scope.dancer.fresh = false;
+            $scope.dancer.phrase = 'fresh';
+            $scope.dancer.hat = false;
+            $scope.dancer.hidden = false;
+            $scope.dancer.exiting = false;
+            freshTicks = 0;
+            vx = (Math.random() < 0.5 ? -1 : 1) * (3 + Math.floor(Math.random() * 6));
+            vy = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.floor(Math.random() * 5));
+
+            danceInterval = $interval(function() {
+                var view = viewport();
+                var visualSize = $scope.dancer.size;
+
+                // Chaotic roaming with occasional momentum shifts.
+                if (Math.random() < 0.12) vx += (Math.random() < 0.5 ? -4 : 4);
+                if (Math.random() < 0.12) vy += (Math.random() < 0.5 ? -3 : 3);
+                if (vx > 12) vx = 12;
+                if (vx < -12) vx = -12;
+                if (vy > 10) vy = 10;
+                if (vy < -10) vy = -10;
+
+                $scope.dancer.x += vx;
+                $scope.dancer.y += vy;
+
+                // Keep dancer on visible page while allowing full-window travel.
+                if ($scope.dancer.x < 0) {
+                    $scope.dancer.x = 0;
+                    vx = Math.abs(vx);
+                }
+                if ($scope.dancer.y < 56) {
+                    $scope.dancer.y = 56;
+                    vy = Math.abs(vy);
+                }
+                if ($scope.dancer.x > view.w - visualSize) {
+                    $scope.dancer.x = Math.max(0, view.w - visualSize);
+                    vx = -Math.abs(vx);
+                }
+                if ($scope.dancer.y > view.h - visualSize) {
+                    $scope.dancer.y = Math.max(56, view.h - visualSize);
+                    vy = -Math.abs(vy);
+                }
+
+                if (Math.random() < 0.35) {
+                    $scope.dancer.pose = randomPose();
+                }
+
+                if (freshTicks > 0) {
+                    freshTicks -= 1;
+                    if (freshTicks === 0) $scope.dancer.fresh = false;
+                } else if (Math.random() < 0.08) {
+                    $scope.dancer.fresh = true;
+                    $scope.dancer.phrase = randomPhrase();
+                    freshTicks = 8;
+                }
+            }, 90);
+
+            sizeInterval = $interval(function() {
+                $scope.dancer.size = randomSize();
+            }, 2000);
+        }
+
+        $scope.onDancerClick = function($event) {
+            if ($event && $event.stopPropagation) $event.stopPropagation();
+            if ($scope.dancer.exiting || $scope.dancer.hidden) return;
+
+            if (danceInterval) {
+                $interval.cancel(danceInterval);
+                danceInterval = null;
+            }
+            if (sizeInterval) {
+                $interval.cancel(sizeInterval);
+                sizeInterval = null;
+            }
+            if (exitInterval) {
+                $interval.cancel(exitInterval);
+                exitInterval = null;
+            }
+            if (exitTimeout) {
+                $timeout.cancel(exitTimeout);
+                exitTimeout = null;
+            }
+
+            $scope.dancer.exiting = true;
+            $scope.dancer.fresh = false;
+            $scope.dancer.hat = true;
+            $scope.dancer.pose = 'bow';
+
+            exitTimeout = $timeout(function() {
+                var view = viewport();
+                var distLeft = $scope.dancer.x;
+                var distRight = view.w - ($scope.dancer.x + $scope.dancer.size);
+                var goRight = distRight > distLeft;
+
+                $scope.dancer.pose = goRight ? 'moonwalk-exit-right' : 'moonwalk-exit-left';
+
+                exitInterval = $interval(function() {
+                    $scope.dancer.x += goRight ? 10 : -10;
+
+                    if ($scope.dancer.x > view.w + 40 || $scope.dancer.x < -($scope.dancer.size + 40)) {
+                        if (exitInterval) {
+                            $interval.cancel(exitInterval);
+                            exitInterval = null;
+                        }
+                        $scope.dancer.hidden = true;
+                        $scope.dancer.exiting = false;
+                    }
+                }, 60);
+            }, 520);
+        };
+
+        function stopDancer() {
+            if (danceInterval) {
+                $interval.cancel(danceInterval);
+                danceInterval = null;
+            }
+            if (sizeInterval) {
+                $interval.cancel(sizeInterval);
+                sizeInterval = null;
+            }
+            if (exitInterval) {
+                $interval.cancel(exitInterval);
+                exitInterval = null;
+            }
+            if (exitTimeout) {
+                $timeout.cancel(exitTimeout);
+                exitTimeout = null;
+            }
+            $scope.dancer.fresh = false;
+            $scope.dancer.size = 20;
+            $scope.dancer.hat = false;
+            $scope.dancer.hidden = false;
+            $scope.dancer.exiting = false;
+        }
+
+
+
+        $scope.$watch(function() { return PlayerService.isPlaying; }, function(isPlaying) {
+            if (isPlaying) {
+                startDancer();
+            } else {
+                stopDancer();
+            }
+        });
+
+        $scope.$on('$destroy', function() {
+            if (danceInterval) { $interval.cancel(danceInterval); }
+            if (sizeInterval) { $interval.cancel(sizeInterval); }
+            if (exitInterval) { $interval.cancel(exitInterval); }
+            if (exitTimeout) { $timeout.cancel(exitTimeout); }
+        });
 
         $scope.getSongs = function() {
             bf.getSongs().then(function(data) {
-    
                 $scope.songs = data.badlands;
-
-                $('.content').masonry({
-                    itemSelector : '.ascii',
-                    columnWidth : 200 
-                });
+                $scope.dancerPhrases = (data.dancer_phrases && data.dancer_phrases.length)
+                    ? data.dancer_phrases
+                    : ['fresh'];
+                PlayerService.setPlaylist($scope.songs);
             });
         };
 
         $scope.updateScore = function(index) {
             bf.updateScore($scope.songs[index]).then(function(data) {
-
                 $scope.songs[index].score = data.score;
-
-            });   
+            });
         };
 
-        // Avoiding https://docs.angularjs.org/error/$interpolate/noconcat?p0= 
+        // Avoiding https://docs.angularjs.org/error/$interpolate/noconcat?p0=
         $scope.interpolateMp3 = function(mp3) {
-            return $sce.trustAsResourceUrl("/mp3/" + mp3);
+            return $sce.trustAsResourceUrl('/mp3/' + mp3);
         };
 
         $scope.interpolateOgg = function(ogg) {
-            return $sce.trustAsResourceUrl("/mp3/" + ogg);
+            return $sce.trustAsResourceUrl('/mp3/' + ogg);
         };
 
-
         $scope.getSongs();
-
-        $('body').css('background-color', '#000000'); //rand_hex_color());
-        $('body').css('opacity', '0.9');
-
     }
 })();
 
@@ -71,7 +268,7 @@
 
     Badland.$inject = ['$http', '$q'];
 
-    function Badland ($http, $q) {
+    function Badland($http, $q) {
 
         var service = {
             getSongs: getSongs,
@@ -80,10 +277,8 @@
 
         return service;
 
-
         function getSongs() {
             var deferred = $q.defer();
-
             $http.get('/badland')
             .success(function(data) {
                 deferred.resolve(data);
@@ -96,7 +291,6 @@
 
         function updateScore(song) {
             var deferred = $q.defer();
-
             $http.post('/update/' + song.id)
             .success(function(data) {
                 deferred.resolve(data);
@@ -113,58 +307,116 @@
 (function() {
     'use strict';
     angular.module('Badland')
-    .directive('changeColor', ChangeColor);
-    
-    function ChangeColor() {
+    .factory('PlayerService', PlayerService);
 
-        return {
-            restrict: 'A',
-            link: function(scope, element, attr, ctrl) {
+    PlayerService.$inject = ['$rootScope'];
 
-                element.css({
-                    'background-color': rand_hex_color(),
-                    'color':            '#ffffff' // rand_hex_color()
-                });
-                $(element).children('.score').css({
-                    'background-color': rand_hex_color(),
-                });
+    function PlayerService($rootScope) {
+        var currentHowl = null;
 
-                element.on("mouseover", function() {
-                    element.everyTime(100, function() {
-                        // everyTime is from jquery.timers.js
-                        element.css({
-                            'background-color': rand_hex_color(),
-                            'color':            '#ffffff', // rand_hex_color()
-                        });
-                        $(element).children('.score').css({
-                            'background-color': rand_hex_color(),
-                            'color':            '#ffffff'
-                        });
-                    });
-                });
-                element.on("mouseout", function() {
-                    element.stopTime();
-                });
-            }
+        var service = {
+            playlist:     [],
+            currentIndex: -1,
+            currentSong:  null,
+            isPlaying:    false,
+            setPlaylist:  setPlaylist,
+            play:         play,
+            pause:        pause,
+            toggle:       toggle,
+            next:         next,
+            prev:         prev,
         };
+
+        return service;
+
+        function safeApply(fn) {
+            if ($rootScope.$$phase) {
+                fn();
+            } else {
+                $rootScope.$apply(fn);
+            }
+        }
+
+        function setPlaylist(songs) {
+            service.playlist = songs;
+        }
+
+        function play(index) {
+            if (index === service.currentIndex && currentHowl) {
+                if (service.isPlaying) {
+                    currentHowl.pause();
+                } else {
+                    currentHowl.play();
+                }
+                return;
+            }
+
+            if (currentHowl) {
+                currentHowl.stop();
+                currentHowl.unload();
+            }
+
+            service.currentIndex = index;
+            service.currentSong  = service.playlist[index];
+
+            currentHowl = new Howl({
+                src: [
+                    '/mp3/' + service.currentSong.file,
+                    '/mp3/' + service.currentSong.ogg
+                ],
+                html5: true,
+                onend: function() {
+                    safeApply(function() {
+                        service.isPlaying = false;
+                        play((service.currentIndex + 1) % service.playlist.length);
+                    });
+                },
+                onplay: function() {
+                    safeApply(function() { service.isPlaying = true; });
+                },
+                onpause: function() {
+                    safeApply(function() { service.isPlaying = false; });
+                },
+                onstop: function() {
+                    safeApply(function() { service.isPlaying = false; });
+                },
+                onerror: function() {
+                    safeApply(function() {
+                        service.isPlaying = false;
+                        if (service.playlist.length > 1) {
+                            play((service.currentIndex + 1) % service.playlist.length);
+                        }
+                    });
+                }
+            });
+            currentHowl.play();
+        }
+
+        function pause() {
+            if (currentHowl && service.isPlaying) {
+                currentHowl.pause();
+            }
+        }
+
+        function toggle() {
+            if (service.isPlaying) {
+                pause();
+            } else if (currentHowl && service.currentIndex >= 0) {
+                currentHowl.play();
+            }
+        }
+
+        function next() {
+            if (service.playlist.length === 0) return;
+            play((service.currentIndex + 1) % service.playlist.length);
+        }
+
+        function prev() {
+            if (service.playlist.length === 0) return;
+            var idx = service.currentIndex <= 0
+                ? service.playlist.length - 1
+                : service.currentIndex - 1;
+            play(idx);
+        }
     }
 })();
-
-
-
-function rand(i) {
-    return Math.floor(Math.random()*i);
-}   
-
-function rand_hex_color() {
-    // http://paulirish.com/2009/random-hex-color-code-snippets/
-    // return '#'+ ('000000' + rand(16777215).toString(16)).slice(-6);
-    // blacks and greys
-    var colors = ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999"];
-    // var colors = ["#414a4c", "#3b444b", "#353839", "#232b2b","#0e1111", "white"];
-    // blacks mostly
-    // var colors = ['#000000', '#262626', '#333333', '#404040', '#4d4d4d', '#595959']
-    // very dark different hues
-    // var colors = ['#330000', '#330d00', '#331a00', '#332600', '#333300', '#263300', '#1a3300', '#0d3300', '#003300', '#00330d', '#00331a', '#00330d', '#00331a', '#003326', '#003333', '#002633', '#001a33', '#000d33', '#000033', '#0d0033', '#1a0033', '#260033', '#330033', '#330026', '#33001a', '#33000d', '#330000'];
-    return colors[Math.floor(Math.random() * colors.length)]
-}   

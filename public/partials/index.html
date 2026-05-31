@@ -1,12 +1,49 @@
+<div class="player-bar">
+    <div class="player-info">
+        <span ng-if="!player.currentSong">&#9834; badland</span>
+        <span ng-if="player.currentSong">{{ player.currentSong.song }}</span>
+    </div>
+    <div class="player-controls">
+        <button ng-click="player.prev()" ng-disabled="!player.currentSong">&#9664;&#9664;</button>
+        <button ng-click="player.currentSong ? player.toggle() : player.play(0)">
+            <span ng-if="!player.isPlaying">&#9654;</span>
+            <span ng-if="player.isPlaying">&#9646;&#9646;</span>
+        </button>
+        <button ng-click="player.next()" ng-disabled="!player.currentSong">&#9654;&#9654;</button>
+    </div>
+</div>
+
+<div class="dancer-layer" ng-if="player.isPlaying && !dancer.hidden">
+    <div class="dancer" ng-style="{
+            left: dancer.x + 'px',
+            top: dancer.y + 'px',
+            transform: 'scale(' + (dancer.size / 20) + ')'
+    }" ng-click="onDancerClick($event)">
+        <div class="dancer-sprite" ng-class="'pose-' + dancer.pose">
+            <div class="fresh-bubble" ng-if="dancer.fresh">{{ dancer.phrase }}</div>
+            <div class="top-hat" ng-if="dancer.hat"></div>
+            <div class="stick-head">
+                <div class="dancer-eye"></div>
+            </div>
+            <div class="stick-body"></div>
+            <div class="stick-arm stick-arm-left"></div>
+            <div class="stick-arm stick-arm-right"></div>
+            <div class="stick-leg stick-leg-left"></div>
+            <div class="stick-leg stick-leg-right"></div>
+        </div>
+    </div>
+</div>
 
 <div class="content">
 
-    <div class="ascii" ng-repeat="song in songs" change-color>
+    <div class="ascii" ng-repeat="song in songs" ng-if="song.file"
+         ng-class="{'playing': player.currentIndex === $index}">
         <pre>{{ song.ascii }}</pre>
         <div class="song">
-            <p><a href="{{ interpolateMp3(song.file) }}">{{ song.song }}</a></p>
-            <audio controls="controls" preload="metadata">
-                <source src="{{ interpolateMp3(song.file) }}">
+            <p>{{ song.song }}</p>
+            <audio controls preload="metadata">
+                <source ng-attr-src="{{ interpolateMp3(song.file) }}" type="audio/mpeg">
+                <source ng-attr-src="{{ interpolateOgg(song.ogg) }}" type="audio/ogg">
             </audio>
         </div>
         <div class="score">

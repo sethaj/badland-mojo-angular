@@ -6,3 +6,9 @@ badland.pid
 /public/mp3
 *.mp3
 *.ogg
+
+# JS test tooling
+/node_modules
+
+# Perl test fixtures (generated at test runtime)
+/t/fixtures
