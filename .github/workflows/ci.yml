@@ -65,16 +65,21 @@ jobs:
           HOST: ${{ secrets.DEPLOY_HOST }}
           USER: ${{ secrets.DEPLOY_USER }}
         run: |
+          set -euo pipefail
           echo "$SSH_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
+
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 22222 "$HOST" >> ~/.ssh/known_hosts
+
           rsync -az --delete \
-            -e "ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=no" \
+            -e "ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=yes" \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='public/mp3' \
             --exclude='database/' \
             ./ ${USER}@${HOST}:/home/seth/apps/badland/
-          ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=no ${USER}@${HOST} \
+          ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=yes ${USER}@${HOST} \
             "cd /home/seth/apps/badland && \
              if [ -d public/packed ]; then find public/packed -maxdepth 1 -type f \( -name '_assetpack.map' -o -name 'style-*.min.css' -o -name 'app-*.min.js' -o -name 'badland-*.js' -o -name 'badland-*.css' \) -delete; fi && \
              docker compose build && \

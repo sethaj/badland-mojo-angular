@@ -241,7 +241,7 @@
             }
         });
 
-                    syncDancerStyle();
+        syncDancerStyle();
         $scope.$on('$destroy', function() {
             if (danceInterval) { $interval.cancel(danceInterval); }
             if (sizeInterval) { $interval.cancel(sizeInterval); }

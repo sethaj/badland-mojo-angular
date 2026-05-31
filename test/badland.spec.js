@@ -66,7 +66,18 @@ describe('Badland App', function () {
     it('should call PlayerService.setPlaylist after getSongs resolves', function () {
       spyOn(PlayerService, 'setPlaylist');
       $rootScope.$digest();
-      expect(PlayerService.setPlaylist).toHaveBeenCalledWith(mockSongs);
+      expect(PlayerService.setPlaylist).toHaveBeenCalled();
+      var playlistArg = PlayerService.setPlaylist.calls.mostRecent().args[0];
+      expect(playlistArg.length).toBe(2);
+      expect(playlistArg[0].song).toBe('Test Song One');
+    });
+
+    it('should precompute mp3Url and oggUrl fields for each song', function () {
+      $rootScope.$digest();
+      expect($scope.songs[0].mp3Url).toBe('/mp3/song1.mp3');
+      expect($scope.songs[0].oggUrl).toBe('/mp3/song1.ogg');
+      expect($scope.songs[1].mp3Url).toBe('/mp3/song2.mp3');
+      expect($scope.songs[1].oggUrl).toBe('/mp3/song2.ogg');
     });
 
     describe('updateScore()', function () {
@@ -84,29 +95,6 @@ describe('Badland App', function () {
       });
     });
 
-    describe('interpolateMp3()', function () {
-      it('should return a trusted resource URL', inject(function ($sce) {
-        var url = $scope.interpolateMp3('mysong.mp3');
-        expect(function () { $sce.getTrustedResourceUrl(url); }).not.toThrow();
-      }));
-
-      it('should include the mp3 filename in the URL', inject(function ($sce) {
-        var url = $scope.interpolateMp3('mysong.mp3');
-        expect($sce.getTrustedResourceUrl(url)).toContain('mysong.mp3');
-      }));
-    });
-
-    describe('interpolateOgg()', function () {
-      it('should return a trusted resource URL', inject(function ($sce) {
-        var url = $scope.interpolateOgg('mysong.ogg');
-        expect(function () { $sce.getTrustedResourceUrl(url); }).not.toThrow();
-      }));
-
-      it('should include the ogg filename in the URL', inject(function ($sce) {
-        var url = $scope.interpolateOgg('mysong.ogg');
-        expect($sce.getTrustedResourceUrl(url)).toContain('mysong.ogg');
-      }));
-    });
   });
 
   // ── BadlandFactory ───────────────────────────────────────────────────────────
