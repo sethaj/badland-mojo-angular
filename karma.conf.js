@@ -20,14 +20,18 @@ module.exports = function(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
-    // FirefoxHeadless using the host Firefox binary (works inside Flatpak sandbox)
     customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      },
+      // FirefoxHeadless using the host Firefox binary (works inside Flatpak sandbox)
       FirefoxHeadless: {
         base: 'Firefox',
         flags: ['--headless']
       }
     },
-    browsers: ['FirefoxHeadless'],
+    browsers: ['ChromeHeadlessCI'],
     singleRun: true,
     concurrency: Infinity
   });
