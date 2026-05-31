@@ -50,3 +50,31 @@ jobs:
 
       - name: Run Karma tests
         run: npm test
+
+  deploy:
+    name: Deploy to VPS
+    needs: [perl-tests, js-tests]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          echo "$SSH_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          rsync -az --delete \
+            -e "ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='public/mp3' \
+            ./ ${USER}@${HOST}:/home/seth/apps/badland/
+          ssh -i /tmp/deploy_key -p 22222 -o StrictHostKeyChecking=no ${USER}@${HOST} \
+            "cd /home/seth/apps/badland && \
+             docker compose build && \
+             docker compose up -d --force-recreate app"
+          rm /tmp/deploy_key
