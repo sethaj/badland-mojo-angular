@@ -152,3 +152,4 @@ __DATA__
 % title 'badland';
 <ng-view></ng-view>
 
+<a href="https://github.com/sethaj/badland-mojo-angular">🔥</a>

@@ -208,4 +208,20 @@ docker compose build && docker compose up -d --force-recreate app
  /     \
 ```
 
+> One day I'd like to visit
+> all the places I went crazy
+> would you please come along with me?
+>
+> And when we get there
+> I'll show you how
+> Sometimes I freak people out
+>
+> I'm still walking
+> around the block
+> people introduce themselves
+> they wonder why I'm not
+>
+> walking with a bit stride
+> saved for times
+> when I'm leaving the world behind
 
