@@ -230,7 +230,7 @@ Mark Brooke-Sumner
 >
 > And when we get there
 > I'll show you how
-> Sometimes I freak people out
+> sometimes I freak people out
 >
 > I'm still walking
 > around the block
