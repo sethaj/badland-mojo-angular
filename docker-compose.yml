@@ -9,6 +9,7 @@ services:
     command: ["perl", "badland.pl", "daemon", "-l", "http://0.0.0.0:8025"]
     ports:
       - "8025:8025"
+    restart: unless-stopped
     volumes:
       - .:/app
       - ./public/mp3:/app/public/mp3

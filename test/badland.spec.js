@@ -11,18 +11,20 @@ describe('Badland App', function () {
   // ── BadlandController (with PlayerService) ──────────────────────────────────
 
   describe('BadlandController', function () {
-    var $scope, $controller, $rootScope, $q, $interval, BadlandFactory, PlayerService;
+    var $scope, $controller, $rootScope, $q, $interval, $httpBackend, BadlandFactory, PlayerService;
     var mockSongs;
 
     beforeEach(module('Badland'));
 
-    beforeEach(inject(function (_$rootScope_, _$controller_, _BadlandFactory_, _$q_, _PlayerService_, _$interval_) {
+    beforeEach(inject(function (_$rootScope_, _$controller_, _BadlandFactory_, _$q_, _PlayerService_, _$interval_, _$httpBackend_) {
       $rootScope     = _$rootScope_;
       $q             = _$q_;
       $interval      = _$interval_;
+      $httpBackend   = _$httpBackend_;
       BadlandFactory = _BadlandFactory_;
       PlayerService  = _PlayerService_;
       $scope         = $rootScope.$new();
+      $httpBackend.whenGET('partials/index.html').respond(200, '');
 
       // Fresh copy each test so mutations in one test don't bleed into others
       // (Jasmine 4 randomises test order by default)
@@ -117,6 +119,7 @@ describe('Badland App', function () {
     beforeEach(inject(function (_BadlandFactory_, _$httpBackend_) {
       BadlandFactory = _BadlandFactory_;
       $httpBackend   = _$httpBackend_;
+      $httpBackend.whenGET('partials/index.html').respond(200, '');
     }));
 
     afterEach(function () {
@@ -167,14 +170,16 @@ describe('Badland App', function () {
   // ── PlayerService ─────────────────────────────────────────────────────────
 
   describe('PlayerService', function () {
-    var PlayerService, $rootScope;
+    var PlayerService, $rootScope, $httpBackend;
     var mockSongs;
 
     beforeEach(module('Badland'));
 
-    beforeEach(inject(function (_PlayerService_, _$rootScope_) {
+    beforeEach(inject(function (_PlayerService_, _$rootScope_, _$httpBackend_) {
       PlayerService = _PlayerService_;
       $rootScope    = _$rootScope_;
+      $httpBackend  = _$httpBackend_;
+      $httpBackend.whenGET('partials/index.html').respond(200, '');
       mockSongs = [
         { id: 1, file: 'song1.mp3', ogg: 'song1.ogg', song: 'Test Song One', score: 5 },
         { id: 2, file: 'song2.mp3', ogg: 'song2.ogg', song: 'Test Song Two', score: 1 },
