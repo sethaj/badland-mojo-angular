@@ -237,7 +237,7 @@ Mark Brooke-Sumner
 > people introduce themselves
 > they wonder why I'm not
 >
-> walking with a bit stride
+> walking with a bit of a stride
 > saved for times
 > when I'm leaving the world behind
 
